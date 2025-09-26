@@ -1,0 +1,32 @@
+name: Enforce CODEOWNERS Approval
+
+on:
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  validate-codeowners:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Get CODEOWNERS
+        id: codeowners
+        run: |
+          if [ ! -f .github/CODEOWNERS ]; then
+            echo "CODEOWNERS file not found!"
+            exit 1
+          fi
+          awk '{print $2}' .github/CODEOWNERS > codeowners_list.txt
+
+      - name: Validate Approval
+        if: github.event.review.state == 'approved'
+        run: |
+          APPROVER="${{ github.event.review.user.login }}"
+          CODEOWNERS=$(cat codeowners_list.txt)
+          if ! echo "$CODEOWNERS" | grep -qw "$APPROVER"; then
+            echo "❌ Approval by non-CODEOWNER: $APPROVER"
+            exit 1
+          else
+            echo "✅ Approval valid from CODEOWNER: $APPROVER"
