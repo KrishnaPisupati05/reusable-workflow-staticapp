@@ -1,32 +1,20 @@
-name: PR Approval and Auto Merge
+name: PR Validation with CODEOWNER Approval
 
 on:
   pull_request:
     types: [opened, reopened, ready_for_review]
 
 jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "Run validation or build steps here"
+
   wait-for-approval:
     runs-on: ubuntu-latest
-    environment: pr-approval  # pauses workflow until CODEOWNER approves
+    needs: validate
+    environment: pr-approval
     steps:
       - uses: actions/checkout@v4
-      - name: Wait for approval
-        run: echo "Workflow paused until CODEOWNER approves in the environment."
-
-  merge-pr:
-    needs: wait-for-approval
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up GitHub CLI
-        run: |
-          sudo apt update
-          sudo apt install gh -y
-      - name: Authenticate GH CLI
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
-      - name: Merge the PR
-        run: |
-          gh pr merge ${{ github.event.pull_request.number }} \
-            --merge \
-            --admin \
-            --repo ${{ github.repository }}
+      - run: echo "Paused until CODEOWNER approves"
