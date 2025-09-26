@@ -12,6 +12,5 @@ jobs:
       node-version: 18.x
       app-location: app1/frontend
       output-location: build
-      skip_app_build: true
 
     secrets: inherit
