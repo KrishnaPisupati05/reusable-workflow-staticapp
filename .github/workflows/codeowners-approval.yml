@@ -2,7 +2,7 @@ name: Enforce CODEOWNERS Approval
 
 on:
   pull_request_review:
-    types: [submitted]
+    types: [opened, reopened, ready_for_review]
 
 jobs:
   validate-codeowners:
