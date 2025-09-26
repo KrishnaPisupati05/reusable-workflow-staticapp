@@ -1,0 +1,28 @@
+name: PR Approval and Auto Merge
+
+on:
+  pull_request:
+    types: [opened, reopened, ready_for_review]
+
+jobs:
+  wait-for-approval:
+    runs-on: ubuntu-latest
+    environment: pr-approval   # <-- Pauses workflow until CODEOWNER approves
+    steps:
+      - uses: actions/checkout@v4
+      - name: Wait for approval
+        run: echo "Workflow paused until CODEOWNER approves in the environment."
+
+  merge-pr:
+    needs: wait-for-approval
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Merge PR
+        uses: peter-evans/merge-pull-request@v5
+        with:
+          pull-request: ${{ github.event.pull_request.number }}
+          merge-method: merge
+          commit-title: "Auto-merged PR after CODEOWNER approval"
+          commit-message: "This PR was automatically merged after CODEOWNER approval."
+          token: ${{ secrets.GITHUB_TOKEN }}
