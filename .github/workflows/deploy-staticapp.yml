@@ -1,0 +1,17 @@
+name: Deploy App1
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy-app1:
+    uses: ./.github/workflows/Reusable-workflow.yml
+    with:
+      app-name: app1
+      environment: app1-test   # Approval environment set in GitHub
+      node-version: 18.x
+      app-location: app1/frontend
+      output-location: build
+      skip_app_build: true
+
+    secrets: inherit
