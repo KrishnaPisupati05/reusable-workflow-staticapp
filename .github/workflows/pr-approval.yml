@@ -7,7 +7,7 @@ on:
 jobs:
   wait-for-approval:
     runs-on: ubuntu-latest
-    environment: pr-approval   # <-- Pauses workflow until CODEOWNER approves
+    environment: pr-approval  # pauses workflow until CODEOWNER approves
     steps:
       - uses: actions/checkout@v4
       - name: Wait for approval
@@ -18,11 +18,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Merge PR
-        uses: peter-evans/merge-pull-request@v5.10.0
-        with:
-          pull-request: ${{ github.event.pull_request.number }}
-          merge-method: merge
-          commit-title: "Auto-merged PR after CODEOWNER approval"
-          commit-message: "This PR was automatically merged after CODEOWNER approval."
-          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set up GitHub CLI
+        run: |
+          sudo apt update
+          sudo apt install gh -y
+      - name: Authenticate GH CLI
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+      - name: Merge the PR
+        run: |
+          gh pr merge ${{ github.event.pull_request.number }} \
+            --merge \
+            --admin \
+            --repo ${{ github.repository }}
