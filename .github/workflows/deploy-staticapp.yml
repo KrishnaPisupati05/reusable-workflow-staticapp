@@ -22,7 +22,7 @@ on:
 
 jobs:
   deploy-app1:
-    uses: ./.github/workflows/Reusable-workflow.yml
+    uses: ./.github/workflows/Reusable-workflow.yml@main
     with:
       branch: ${{ github.event.inputs.branch }}
       environment: ${{ github.event.inputs.deployment-environment }}
