@@ -18,10 +18,10 @@ on:
           - app2-test
           - app2-prod
       promote-to-production:
-        description: 'Promote current build to Production?'
+        description: 'Deploy to Production slot?'
         required: false
         type: boolean
-        default: false
+        default: false   # unchecked → deploy to staging
 
 jobs:
   deploy-app1:

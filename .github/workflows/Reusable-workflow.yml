@@ -6,7 +6,7 @@ on:
       app-name:
         required: true
         type: string
-      environment:         # GitHub Environment for approvals
+      environment:
         required: true
         type: string
       node-version:
@@ -18,7 +18,7 @@ on:
       output-location:
         required: true
         type: string
-      branch:             # Branch name to deploy
+      branch:
         required: false
         type: string
         default: ${{ github.ref_name }}
@@ -28,6 +28,7 @@ on:
         default: false
 
 jobs:
+
   validate:
     name: Validate & Build
     runs-on: ubuntu-latest
@@ -65,12 +66,10 @@ jobs:
     outputs:
       slot: ${{ steps.set-slot.outputs.slot }}
     steps:
-      - name: Set Slot Based on Branch / Promotion
+      - name: Set Slot Based on Promotion
         id: set-slot
         run: |
           if [ "${{ inputs.promote-to-production }}" = "true" ]; then
-            echo "slot=production" >> $GITHUB_OUTPUT
-          elif [[ "${{ inputs.branch }}" == "main" || "${{ inputs.branch }}" == "master" ]]; then
             echo "slot=production" >> $GITHUB_OUTPUT
           else
             echo "slot=staging" >> $GITHUB_OUTPUT
@@ -81,7 +80,6 @@ jobs:
     name: Await Approval
     needs: determine-slot
     runs-on: ubuntu-latest
-    if: ${{ inputs.promote-to-production == false }}   # optional: skip approval for promotions if desired
     environment: ${{ inputs.environment }}
     steps:
       - name: Approval Message
@@ -110,4 +108,4 @@ jobs:
 
       - name: Deployment Info
         run: |
-          echo "✅ Deployed ${{ inputs.app-name }} to slot: ${{ needs.determine-slot.outputs.slot }}"
+          echo "✅ Deployed ${{ inputs.app-name }} to slot: ${{ needs.determine-slot.outputs.slot }} using GitHub environment: ${{ inputs.environment }}"
