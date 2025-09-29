@@ -84,4 +84,4 @@ jobs:
         run: echo "✅ Deploying ${{ inputs.app-name }} to slot: ${{ steps.slot.outputs.slot }}"
 
       - name: Deploy to Azure Static Web App
-        run: echo "✅ Deploy to Azure Static Web App simulated"
+        run: echo "✅ Deploy to Azure static Web App simulated"
