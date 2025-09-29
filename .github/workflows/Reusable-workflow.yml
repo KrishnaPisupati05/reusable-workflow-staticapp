@@ -64,7 +64,7 @@ jobs:
     environment: ${{ inputs.environment }}   # GitHub approval environment
     steps:
       - name: Approval Message
-        run: 
+        run: | 
           echo "⏳ Awaiting approval for ${{ inputs.app-name }} to deploy to slot: ${{ inputs.slot-name }}"
 
   deploy:
