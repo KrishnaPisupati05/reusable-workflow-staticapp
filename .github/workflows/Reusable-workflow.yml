@@ -59,7 +59,8 @@ jobs:
     environment: ${{ inputs.environment }}
     steps:
       - name: Approval Message
-        run: echo "⏳ Awaiting approval for environment: ${{ inputs.environment }}"
+        run: |
+          echo "Approval required from reviewers configured in environment: ${{ inputs.environment }}"
 
   deploy:
     name: Deploy Static Web App
