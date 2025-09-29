@@ -73,7 +73,7 @@ jobs:
         run: |
           BRANCH_NAME=${GITHUB_REF#refs/heads/}
           if [[ "$BRANCH_NAME" == "main" || "$BRANCH_NAME" == "master" ]]; then
-            echo "slot=production" >> $GITHUB_OUTPUT
+            echo "slot=Production" >> $GITHUB_OUTPUT
           else
             echo "slot=staging" >> $GITHUB_OUTPUT
           fi
