@@ -18,6 +18,11 @@ on:
       output-location:
         required: true
         type: string
+      branch:
+        required: false
+        type: string
+        default: ${{ github.ref_name }}
+
 
 jobs:
 
