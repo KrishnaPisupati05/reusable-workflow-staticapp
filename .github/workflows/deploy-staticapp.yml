@@ -8,7 +8,7 @@ on:
         required: true
         default: 'main'
       deployment-environment:
-        description: 'Select GitHub Environment for approval'
+        description: 'Select GitHub environment for approval'
         required: true
         type: choice
         default: 'app1-test'
@@ -22,10 +22,11 @@ jobs:
   deploy-app1:
     uses: ./.github/workflows/Reusable-workflow.yml
     with:
-      branch: ${{ github.event.inputs.branch }}
-      environment: ${{ github.event.inputs.deployment-environment }}
       app-name: app1
       node-version: 18.x
       app-location: app1/frontend
       output-location: build
+      branch: ${{ github.event.inputs.branch }}
+      slot-name: ${{ github.event.inputs.branch == 'main' && 'production' || 'staging' }}
+      environment: ${{ github.event.inputs.deployment-environment }}
     secrets: inherit
