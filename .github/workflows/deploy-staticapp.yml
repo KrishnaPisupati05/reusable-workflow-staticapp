@@ -2,6 +2,18 @@ name: Deploy App1
 
 on:
   workflow_dispatch:
+    inputs:
+      deployment-environment:
+        description: 'Select GitHub Environment for approval'
+        required: true
+        default: 'app1-test'
+        type: choice
+        options:
+          - app1-test
+          - app1-prod
+          - app2-test
+          - app2-prod
+
 
 jobs:
   deploy-app1:

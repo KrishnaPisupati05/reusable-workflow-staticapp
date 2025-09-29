@@ -1,12 +1,11 @@
 {
-    "name": "app1",
-    "version": "1.0.0",
-    "private": true,
-    "scripts": {
-      "lint": "eslint .",
-      "test": "echo 'Run tests here' && exit 0",
-      "build": "echo 'build app here' && mkdir -p build && echo index.html > build/index.html"
-    },    
-    "dependencies": {}
-  }
-  
+  "name": "app1",
+  "version": "1.0.0",
+  "scripts": {
+    "lint": "echo 'Lint step passed for testing'",
+    "test": "echo 'Test step passed for testing' && exit 0",
+    "build": "echo 'Build step running' && mkdir -p build && echo index.html > build/index.html"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

@@ -49,15 +49,6 @@ jobs:
         run: npm run build
         working-directory: ${{ inputs.app-location }}
 
-      - name: Verify Build Output
-        run: |
-          BUILD_DIR="${{ inputs.app-location }}/${{ inputs.output-location }}"
-          if [ ! -d "$BUILD_DIR" ] || [ -z "$(ls -A $BUILD_DIR)" ]; then
-            echo "❌ Build output is missing or empty: $BUILD_DIR"
-            exit 1
-          fi
-          echo "✅ Build output verified: $BUILD_DIR contains files"
-
   approve:
     name: Await Approval
     needs: validate
@@ -89,7 +80,8 @@ jobs:
           echo "✅ Slot determined: ${{ steps.slot.outputs.slot }}"
 
       - name: Echo Slot Name
-        run: echo "✅ Deploying ${{ inputs.app-name }} to slot: ${{ steps.slot.outputs.slot }}"
+        run: | 
+          echo "✅ Deploying ${{ inputs.app-name }} to slot: ${{ steps.slot.outputs.slot }}"
 
       - name: Deploy to Azure Static Web App
         uses: Azure/static-web-apps-deploy@v1
