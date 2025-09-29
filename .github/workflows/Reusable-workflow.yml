@@ -18,9 +18,6 @@ on:
       output-location:
         required: true
         type: string
-      branch:
-        required: true
-        type: string
 
 jobs:
 
