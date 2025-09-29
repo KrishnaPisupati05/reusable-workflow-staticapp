@@ -24,6 +24,7 @@ on:
         default: ${{ github.ref_name }}
       promote-to-production:
         required: false
+        type: string
         default: false
 
 jobs:
