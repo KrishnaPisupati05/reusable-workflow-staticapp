@@ -89,8 +89,7 @@ jobs:
           echo "✅ Slot determined: ${{ steps.slot.outputs.slot }}"
 
       - name: Echo Slot Name
-        run: | 
-          echo "✅ Deploying ${{ inputs.app-name }} to slot: ${{ steps.slot.outputs.slot }}"
+        run: echo "✅ Deploying ${{ inputs.app-name }} to slot: ${{ steps.slot.outputs.slot }}"
 
       - name: Deploy to Azure Static Web App
         uses: Azure/static-web-apps-deploy@v1
