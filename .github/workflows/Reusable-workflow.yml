@@ -64,7 +64,8 @@ jobs:
     environment: ${{ inputs.environment }}   # GitHub approval environment
     steps:
       - name: Approval Message
-        run: echo "⏳ Awaiting approval for ${{ inputs.app-name }} to deploy to slot: ${{ inputs.slot-name }}"
+        run: | 
+          echo "⏳ Awaiting approval for ${{ inputs.app-name }} to deploy to slot: ${{ inputs.slot-name }}"
 
   deploy:
     name: Deploy to Azure Static Web App
@@ -87,4 +88,5 @@ jobs:
           deployment_environment: ${{ inputs.slot-name }}   # Azure slot: staging/production
 
       - name: Deployment Info
-        run: echo "✅ Deployed ${{ inputs.app-name }} to slot: ${{ inputs.slot-name }} using GitHub environment: ${{ inputs.environment }}"
+        run: | 
+          echo "✅ Deployed ${{ inputs.app-name }} to slot: ${{ inputs.slot-name }} using GitHub environment: ${{ inputs.environment }}"
