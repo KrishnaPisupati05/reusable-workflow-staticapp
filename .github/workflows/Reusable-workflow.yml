@@ -6,7 +6,10 @@ on:
       app-name:
         required: true
         type: string
-      environment:
+      environment:       # GitHub Environment for approvals
+        required: true
+        type: string
+      slot-name:         # Azure deployment slot: staging or production
         required: true
         type: string
       node-version:
@@ -18,17 +21,12 @@ on:
       output-location:
         required: true
         type: string
-      branch:
+      branch:            # Branch name to deploy
         required: false
         type: string
         default: ${{ github.ref_name }}
-      promote-to-production:
-        required: false
-        type: string
-        default: false
 
 jobs:
-
   validate:
     name: Validate & Build
     runs-on: ubuntu-latest
@@ -59,36 +57,18 @@ jobs:
         run: npm run build
         working-directory: ${{ inputs.app-location }}
 
-  determine-slot:
-    name: Determine Deployment Slot
-    needs: validate
-    runs-on: ubuntu-latest
-    outputs:
-      slot: ${{ steps.set-slot.outputs.slot }}
-    steps:
-      - name: Set Slot Based on Promotion
-        id: set-slot
-        run: |
-          if [ "${{ inputs.promote-to-production }}" = "true" ]; then
-            echo "slot=production" >> $GITHUB_OUTPUT
-          else
-            echo "slot=staging" >> $GITHUB_OUTPUT
-          fi
-          echo "✅ Slot determined: ${{ steps.set-slot.outputs.slot }}"
-
   approve:
     name: Await Approval
-    needs: determine-slot
+    needs: validate
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
+    environment: ${{ inputs.environment }}   # GitHub approval environment
     steps:
       - name: Approval Message
-        run: |
-          echo "⏳ Awaiting approval for ${{ inputs.app-name }} to deploy to slot: ${{ needs.determine-slot.outputs.slot }}"
+        run: echo "⏳ Awaiting approval for ${{ inputs.app-name }} to deploy to slot: ${{ inputs.slot-name }}"
 
   deploy:
     name: Deploy to Azure Static Web App
-    needs: [validate, determine-slot, approve]
+    needs: [validate, approve]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -104,8 +84,7 @@ jobs:
           action: "upload"
           app_location: ${{ inputs.app-location }}
           output_location: ${{ inputs.output-location }}
-          deployment_environment: ${{ needs.determine-slot.outputs.slot }}
+          deployment_environment: ${{ inputs.slot-name }}   # Azure slot: staging/production
 
       - name: Deployment Info
-        run: |
-          echo "✅ Deployed ${{ inputs.app-name }} to slot: ${{ needs.determine-slot.outputs.slot }} using GitHub environment: ${{ inputs.environment }}"
+        run: echo "✅ Deployed ${{ inputs.app-name }} to slot: ${{ inputs.slot-name }} using GitHub environment: ${{ inputs.environment }}"

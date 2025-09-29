@@ -1,3 +1,5 @@
+name: Deploy App1
+
 on:
   workflow_dispatch:
     inputs:
@@ -5,7 +7,7 @@ on:
         description: 'Select branch to deploy'
         required: true
         default: 'main'
-      deployment-environment:
+      deployment-environment:   # GitHub environment for approval
         description: 'Select GitHub Environment for approval'
         required: true
         type: choice
@@ -15,20 +17,23 @@ on:
           - app1-prod
           - app2-test
           - app2-prod
-      promote-to-production:
-        description: 'Deploy to Production slot? (true/false)'
-        required: false
-        default: 'false'
+      slot-name:               # Azure deployment slot
+        description: 'Select deployment slot'
+        required: true
+        type: choice
+        default: staging
+        options:
+          - staging
+          - production
 
 jobs:
   deploy-app1:
-    uses: ./.github/workflows/Reusable-workflow.yml@main
+    uses: ./.github/workflows/Reusable-workflow.yml
     with:
-      branch: ${{ github.event.inputs.branch }}
-      environment: ${{ github.event.inputs.deployment-environment }}
       app-name: app1
+      environment: ${{ github.event.inputs.deployment-environment }}   # Approval environment
+      slot-name: ${{ github.event.inputs.slot-name }}                  # Azure deployment slot
       node-version: 18.x
       app-location: app1/frontend
       output-location: build
-      promote-to-production: ${{ github.event.inputs.promote-to-production }}
     secrets: inherit
