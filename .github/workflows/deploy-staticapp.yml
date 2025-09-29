@@ -1,5 +1,3 @@
-name: Deploy App1
-
 on:
   workflow_dispatch:
     inputs:
@@ -18,10 +16,9 @@ on:
           - app2-test
           - app2-prod
       promote-to-production:
-        description: 'Deploy to Production slot?'
+        description: 'Deploy to Production slot? (true/false)'
         required: false
-        type: boolean
-        default: false   # unchecked → deploy to staging
+        default: 'false'
 
 jobs:
   deploy-app1:
