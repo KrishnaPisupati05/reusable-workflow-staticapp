@@ -3,8 +3,10 @@
     "version": "1.0.0",
     "private": true,
     "scripts": {
-      "build": "mkdir -p build && cp frontend/* build/"
-    },
+      "lint": "eslint .",
+      "test": "echo 'run tests here' && exit 0",
+      "build": "echo 'build app here' && mkdir -p build && echo index.html > build/index.html"
+    },    
     "dependencies": {}
   }
   
