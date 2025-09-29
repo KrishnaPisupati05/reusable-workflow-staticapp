@@ -3,6 +3,10 @@ name: Deploy App1
 on:
   workflow_dispatch:
     inputs:
+      branch:
+        description: 'Select branch to deploy'
+        required: true
+        default: 'main'
       deployment-environment:
         description: 'Select GitHub Environment for approval'
         required: true
@@ -19,6 +23,7 @@ jobs:
   deploy-app1:
     uses: ./.github/workflows/Reusable-workflow.yml
     with:
+      branch: ${{ github.event.inputs.branch }}
       app-name: app1
       environment: app1-test   # Approval environment set in GitHub
       node-version: 18.x
