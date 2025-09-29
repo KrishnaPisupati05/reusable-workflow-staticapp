@@ -85,7 +85,7 @@ jobs:
           action: "upload"
           app_location: ${{ inputs.app-location }}
           output_location: ${{ inputs.output-location }}
-          deployment_environment: "Production"   # Azure slot: staging/production
+          #deployment_environment: "Production"   # Azure slot: staging/production
 
       - name: Deployment Info
         run: | 
