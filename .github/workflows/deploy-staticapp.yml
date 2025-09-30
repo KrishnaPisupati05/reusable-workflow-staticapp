@@ -11,16 +11,12 @@ on:
         description: "Select GitHub Environment (used only if deploying to Production)"
         required: true
         type: choice
-        default: "app1-prod"
+        default: "app1-test"
         options:
           - app1-test
           - app1-prod
           - app2-test
           - app2-prod
-      branch:
-        description: "Branch to deploy"
-        required: false
-        default: "main"
 
 jobs:
   deploy-app1:
