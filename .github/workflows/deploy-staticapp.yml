@@ -3,28 +3,33 @@ name: Deploy App1
 on:
   workflow_dispatch:
     inputs:
-      branch:
-        description: 'Select branch to deploy'
-        required: true
-        default: 'main'
+      slot-name:
+        description: "Enter slot name (staging/test). Leave empty ONLY for Production (approval required)."
+        required: false
+        default: ""
       deployment-environment:
-        description: 'Select GitHub Environment for approval'
+        description: "Select GitHub Environment (used only if deploying to Production)"
         required: true
         type: choice
-        default: 'app1-test'
+        default: "app1-prod"
         options:
           - app1-test
           - app1-prod
           - app2-test
           - app2-prod
+      branch:
+        description: "Branch to deploy"
+        required: false
+        default: "main"
 
 jobs:
   deploy-app1:
-    uses: ./.github/workflows/Reusable-workflow.yml
+    uses: ./.github/workflows/Reusable-workflow.yml   # path to your reusable workflow
     with:
+      app-name: app1
       branch: ${{ github.event.inputs.branch }}
       environment: ${{ github.event.inputs.deployment-environment }}
-      app-name: app1
+      slot-name: ${{ github.event.inputs.slot-name }}
       node-version: 18.x
       app-location: app1/frontend
       output-location: build

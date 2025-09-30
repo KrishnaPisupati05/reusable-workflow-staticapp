@@ -6,12 +6,13 @@ on:
       app-name:
         required: true
         type: string
-      environment:       # GitHub Environment for approvals
+      environment:       # GitHub Environment for approvals (Prod only)
         required: true
         type: string
-      slot-name:         # Azure deployment slot: staging or production
+      slot-name:         # Azure deployment slot: staging/test/etc (empty = Production)
         required: false
         type: string
+        default: ""      # Default empty → means Production
       node-version:
         required: true
         type: string
@@ -21,7 +22,7 @@ on:
       output-location:
         required: true
         type: string
-      branch:            # Branch name to deploy
+      branch:
         required: false
         type: string
         default: ${{ github.ref_name }}
@@ -58,18 +59,21 @@ jobs:
         working-directory: ${{ inputs.app-location }}
 
   approve:
-    name: Await Approval
+    name: Await Prod Approval
     needs: validate
+    if: ${{ inputs.slot-name == '' }}   # Run approval ONLY if Production
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}   # GitHub approval environment
+    environment: ${{ inputs.environment }}   # Requires GitHub env approval
     steps:
       - name: Approval Message
         run: | 
-          echo "⏳ Awaiting approval for ${{ inputs.app-name }} to deploy to slot: ${{ inputs.slot-name }}"
+          echo "⏳ Awaiting approval for ${{ inputs.app-name }} to deploy to Production slot"
 
   deploy:
     name: Deploy to Azure Static Web App
-    needs: [validate, approve]
+    needs: 
+      - validate
+      - ${{ inputs.slot-name == '' && 'approve' || '' }}   # Add approval only if prod
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -85,8 +89,8 @@ jobs:
           action: "upload"
           app_location: ${{ inputs.app-location }}
           output_location: ${{ inputs.output-location }}
-          #deployment_environment: "Production"   # Azure slot: staging/production
+          deployment_environment: ${{ inputs.slot-name != '' && inputs.slot-name || 'Production' }}
 
       - name: Deployment Info
         run: | 
-          echo "✅ Deployed ${{ inputs.app-name }} to slot: ${{ inputs.slot-name }} using GitHub environment: ${{ inputs.environment }}"
+          echo "✅ Deployed ${{ inputs.app-name }} to slot: ${{ inputs.slot-name != '' && inputs.slot-name || 'Production' }}"
