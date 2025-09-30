@@ -22,10 +22,6 @@ on:
       output-location:
         required: true
         type: string
-      branch:
-        required: false
-        type: string
-        default: ${{ github.ref_name }}
 
 jobs:
   validate:
@@ -34,8 +30,6 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.branch }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -63,25 +57,20 @@ jobs:
     needs: validate
     if: ${{ inputs.slot-name == '' }}   # Run approval ONLY if Production
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}   # Requires GitHub env approval
+    environment: ${{ inputs.environment }}
     steps:
       - name: Approval Message
-        run: | 
-          echo "⏳ Awaiting approval for ${{ inputs.app-name }} to deploy to Production slot"
+        run: echo "⏳ Awaiting approval for ${{ inputs.app-name }} to deploy to Production slot"
 
   deploy:
     name: Deploy to Azure Static Web App
-    needs: [validate, approve]   # Safe: approve skipped if not Prod
+    needs: [validate, approve]   # approve skipped if not Production
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.branch }}
 
-      # Deploy to custom slot (staging/test)
-      - name: Deploy to Azure Static Web App (Custom Slot)
-        if: ${{ inputs.slot-name != '' }}
+      - name: Deploy to Azure Static Web App
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
@@ -89,20 +78,8 @@ jobs:
           action: "upload"
           app_location: ${{ inputs.app-location }}
           output_location: ${{ inputs.output-location }}
-          deployment_environment: ${{ inputs.slot-name }}
+          ${{ inputs.slot-name != '' && format('deployment_environment={0}', inputs.slot-name) || '' }}
 
-      # Deploy to Production
-      - name: Deploy to Azure Static Web App (Production)
-        if: ${{ inputs.slot-name == '' }}
-        uses: Azure/static-web-apps-deploy@v1
-        with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          action: "upload"
-          app_location: ${{ inputs.app-location }}
-          output_location: ${{ inputs.output-location }}
-
-      # Simple deployment info
       - name: Deployment Info
         run: |
           SLOT="${{ inputs.slot-name }}"
