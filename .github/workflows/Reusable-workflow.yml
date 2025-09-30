@@ -59,7 +59,8 @@ jobs:
     environment: ${{ inputs.environment }}
     steps:
       - name: Approval Message
-        run: echo "⏳ Awaiting approval for ${{ inputs.app-name }} to deploy to slot: '${{ inputs.slot-name != '' && inputs.slot-name || 'Production' }}'"
+        run: | 
+          echo "⏳ Awaiting approval for ${{ inputs.app-name }} to deploy to slot: '${{ inputs.slot-name != '' && inputs.slot-name || 'Production' }}'"
 
   deploy:
     name: Deploy to Azure Static Web App
