@@ -4,14 +4,20 @@ on:
   workflow_dispatch:
     inputs:
       slot-name:
-        description: "Enter the slot to deploy: leave empty for Production (requires approval), or specify a slot like staging/test for direct deployment."
+        description: |
+          Azure deployment slot:
+          - Leave empty → deploy to Production slot
+          - Enter "staging", "test", or any custom name → deploy to a custom slot
+          - Approval is required for all deployments
         required: false
         default: ""
-      deployment-environment:
-        description: "Select GitHub Environment (used only if deploying to Production)"
+      environment:
+        description: |
+          GitHub Environment for approval:
+          - Choose the environment corresponding to this deployment
+          - Approval is required before deployment proceeds
         required: true
         type: choice
-        default: "app1-test"
         options:
           - app1-test
           - app1-prod
@@ -20,11 +26,11 @@ on:
 
 jobs:
   deploy-app1:
-    uses: ./.github/workflows/Reusable-workflow.yml   # path to your reusable workflow
+    uses: ./.github/workflows/Reusable-workflow.yml
     with:
-      app-name: app1
-      environment: ${{ github.event.inputs.deployment-environment }}
       slot-name: ${{ github.event.inputs.slot-name }}
+      environment: ${{ github.event.inputs.environment }}
+      app-name: app1
       node-version: 18.x
       app-location: app1/frontend
       output-location: build
