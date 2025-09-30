@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       slot-name:
-        description: "Enter slot name (staging/test). Leave empty ONLY for Production (approval required)."
+        description: "Enter the slot to deploy: leave empty for Production (requires approval), or specify a slot like staging/test for direct deployment."
         required: false
         default: ""
       deployment-environment:

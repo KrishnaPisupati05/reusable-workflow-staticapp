@@ -102,9 +102,11 @@ jobs:
           app_location: ${{ inputs.app-location }}
           output_location: ${{ inputs.output-location }}
 
+      # Simple deployment info
       - name: Deployment Info
         run: |
-          if [ -z "${{ inputs.slot-name }}" ]; then
-            echo "✅ Deployed ${{ inputs.app-name }} to Production (after approval if applicable)"
-          else
-            echo "✅ Deployed ${{ inputs.app-name }} to slot: ${{ inputs.slot-name }}"
+          SLOT="${{ inputs.slot-name }}"
+          if [ -z "$SLOT" ]; then
+            SLOT="Production"
+          fi
+          echo "✅ Deployed to slot: $SLOT"
