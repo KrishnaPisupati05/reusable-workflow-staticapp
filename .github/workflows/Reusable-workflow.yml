@@ -12,7 +12,7 @@ on:
       slot-name:         # Azure deployment slot: staging/test/etc (empty = Production)
         required: false
         type: string
-        default: ""      # Default empty → means Production
+        default: ""      # Empty → means Production
       node-version:
         required: true
         type: string
@@ -71,9 +71,7 @@ jobs:
 
   deploy:
     name: Deploy to Azure Static Web App
-    needs: 
-      - validate
-      - ${{ inputs.slot-name == '' && 'approve' || '' }}   # Add approval only if prod
+    needs: [validate, approve]   # Safe: approve skipped if not Prod
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -81,7 +79,9 @@ jobs:
         with:
           ref: ${{ inputs.branch }}
 
-      - name: Deploy to Azure Static Web App
+      # Deploy to custom slot (staging/test)
+      - name: Deploy to Azure Static Web App (Custom Slot)
+        if: ${{ inputs.slot-name != '' }}
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
@@ -89,8 +89,22 @@ jobs:
           action: "upload"
           app_location: ${{ inputs.app-location }}
           output_location: ${{ inputs.output-location }}
-          deployment_environment: ${{ inputs.slot-name != '' && inputs.slot-name || 'Production' }}
+          deployment_environment: ${{ inputs.slot-name }}
+
+      # Deploy to Production
+      - name: Deploy to Azure Static Web App (Production)
+        if: ${{ inputs.slot-name == '' }}
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: "upload"
+          app_location: ${{ inputs.app-location }}
+          output_location: ${{ inputs.output-location }}
 
       - name: Deployment Info
-        run: | 
-          echo "✅ Deployed ${{ inputs.app-name }} to slot: ${{ inputs.slot-name != '' && inputs.slot-name || 'Production' }}"
+        run: |
+          if [ -z "${{ inputs.slot-name }}" ]; then
+            echo "✅ Deployed ${{ inputs.app-name }} to Production (after approval if applicable)"
+          else
+            echo "✅ Deployed ${{ inputs.app-name }} to slot: ${{ inputs.slot-name }}"
