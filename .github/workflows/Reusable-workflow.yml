@@ -27,15 +27,14 @@ on:
 permissions:
   contents: read
 
-env:
-  TEST_BRANCHES_JSON: '["dev","devfeatures","development"]'
-
 jobs:
 
   validate:
     name: Test & Build
     runs-on: ubuntu-latest
-    if: github.ref_name == 'master' || contains(fromJSON(env.TEST_BRANCHES_JSON), github.ref_name)
+    if: |
+      contains(fromJSON('["master"]'), github.ref_name) ||
+      contains(fromJSON('["dev","devfeatures","development"]'), github.ref_name)
     defaults:
       run:
         working-directory: ${{ inputs.app-location }}
@@ -72,8 +71,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: [validate, approval]
     if: |
-      (github.ref_name == 'master' && inputs.deploy-prod == 'true') ||
-      contains(fromJSON(env.TEST_BRANCHES_JSON), github.ref_name)
+      contains(fromJSON('["master"]'), github.ref_name) ||
+      contains(fromJSON('["dev","devfeatures","development"]'), github.ref_name)
     env:
       DEPLOY_TOKEN: ${{ github.ref_name == 'master' && secrets.STATIC_WEB_APP_TOKEN_PROD || secrets.STATIC_WEB_APP_TOKEN_TEST }}
     steps:
