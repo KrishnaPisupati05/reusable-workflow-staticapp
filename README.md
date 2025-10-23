@@ -12,13 +12,12 @@ A lightweight reusable GitHub Actions workflow for deploying an Azure Static Web
 
 ---
 
-## Branch & Deployment Matrix
+## Branch & Deployment Matrix (Current Behavior)
 
-| Branch                   | Needs `deploy-prod=true` | Environment       | Token Secret                    | Approval Required |
-|--------------------------|--------------------------|-------------------|---------------------------------|------------------|
-| dev / devfeatures / development | No                       | auto-approve       | STATIC_WEB_APP_TOKEN_TEST        | No (unless reviewers added) |
-| master (deploy-prod = false)    | Yes (not set)            | (validate only)    | -                               | No               |
-| master (deploy-prod = true)     | Yes (set)                | Production         | STATIC_WEB_APP_TOKEN_PROD        | Yes (reviewers)  |
+| Branches                             | Environment Used | Token Secret Used            | Manual Approval? | `deploy-prod` Input Effect |
+|-------------------------------------|------------------|------------------------------|------------------|-----------------------------|
+| `dev`, `devfeatures`, `development` | `auto-approve`   | `STATIC_WEB_APP_TOKEN_TEST`  | No (unless you add reviewers to that env) | Ignored |
+| `master`                            | `Production`     | `STATIC_WEB_APP_TOKEN_PROD`  | Yes (Production env reviewers) | Ignored |
 
 ---
 
