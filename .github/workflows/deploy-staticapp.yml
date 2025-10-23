@@ -1,37 +1,32 @@
-name: Deploy App1
+name: Deploy Static Web App
 
 on:
+  push:
+    branches:
+      - master
+      - dev
+      - devfeatures
+      - development
   workflow_dispatch:
     inputs:
-      slot-name:
-        description: |
-          Azure deployment slot:
-          - Leave empty → deploy to Production slot
-          - Enter "staging", "test", or any custom name → deploy to a custom slot
-          - Approval is required for all deployments
+      deploy-prod:
+        description: "Set to true to deploy to Production"
         required: false
-        default: ""
-      environment:
-        description: |
-          GitHub Environment for approval:
-          - Choose the environment corresponding to this deployment
-          - Approval is required before deployment proceeds
-        required: true
         type: choice
-        options:
-          - app1-test
-          - app1-prod
-          - app2-test
-          - app2-prod
+        options: ["false","true"]
+        default: "false"
+
+permissions:
+  contents: read
 
 jobs:
-  deploy-app1:
+  deploy-staticwebapp:
     uses: ./.github/workflows/Reusable-workflow.yml
     with:
-      slot-name: ${{ github.event.inputs.slot-name }}
-      environment: ${{ github.event.inputs.environment }}
-      app-name: app1
-      node-version: 18.x
+      node-version: 20.x
       app-location: app1/frontend
       output-location: build
-    secrets: inherit
+      deploy-prod: ${{ inputs.deploy-prod }}
+    secrets:
+      STATIC_WEB_APP_TOKEN_TEST: ${{ secrets.STATIC_WEB_APP_TOKEN_TEST }}
+      STATIC_WEB_APP_TOKEN_PROD: ${{ secrets.STATIC_WEB_APP_TOKEN_PROD }}
