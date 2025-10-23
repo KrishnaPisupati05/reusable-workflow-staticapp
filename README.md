@@ -1,4 +1,4 @@
-# Reusable Static Web App Deployment Workflow (Summary)
+# Reusable Static Web App Deployment Workflow
 
 A lightweight reusable GitHub Actions workflow for deploying an Azure Static Web App (Basic plan) to TEST or PROD, with a two-step safeguard for Production.
 
